@@ -4,7 +4,16 @@
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MAR TYRE - TYRE MINING SITE MACO</title>
+  <title>MAR Tyreman</title>
+
+  <!-- PWA / App Icon Configuration for Installed Mobile App (Android & iOS) -->
+  <link rel="icon" type="image/png" id="head-favicon" href="https://lh3.googleusercontent.com/d/1BMvhm1pZMW3oH89eYzj2NykcDImQuLpV">
+  <link rel="apple-touch-icon" id="head-apple-icon" href="https://lh3.googleusercontent.com/d/1BMvhm1pZMW3oH89eYzj2NykcDImQuLpV">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="MAR Tyreman">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MAR Tyreman">
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -200,10 +209,10 @@
       </div>
 
       <h2 id="app-title-text" class="font-display font-black text-2xl text-amber-100 tracking-wider uppercase drop-shadow-md">
-        TYRE MINING SITE MACO
+        MAR TYREMAN
       </h2>
       <p id="app-subtitle-text" class="text-xs font-bold text-brand-yellow uppercase tracking-widest mb-8 drop-shadow">
-        MAR TYRE MANAGEMENT SYSTEM
+        MAR SYSTEM TYRE MANAGEMENT
       </p>
 
       <div class="w-full max-w-xs space-y-4 text-left">
@@ -492,11 +501,33 @@
   <script>
     // --- APP CONFIGURATION BLOCK ---
     const APP_CONFIG = {
-      appName: "MAR Tyre",
-      logoUrl: "https://lh3.googleusercontent.com/d/1BMvhm1pZMW3oH89eYzj2NykcDImQuLpV",
+      appName: "MAR Tyreman",
+      // 1. Logo yang tampil di TENGAH HALAMAN LOGIN
+      loginLogoUrl: "https://lh3.googleusercontent.com/d/1BMvhm1pZMW3oH89eYzj2NykcDImQuLpV",
+      // 2. Logo/Ikon APLIKASI saat DI-INSTALL DI HOMESCREEN HP (Android/iOS)
+      appIconUrl: "https://lh3.googleusercontent.com/d/1WDQixtYrPbf5cMuTMTpJAISmezDlPvcG",
+      // 3. Foto Wallpaper Background
       bgUrl: "https://lh3.googleusercontent.com/d/1vZl9nBUEJlsYOol_KIYSzsoiVHwpQvrx",
+      // 4. Endpoint Web App Google Apps Script
       gasApiUrl: "https://script.google.com/macros/s/AKfycbyiaW4NUYBaCy0YVriC2oXRH6TJwklCcfz-aBdzFvj1wgQ_Fr7LTA4IrTl4PrlhgSJh/exec"
     };
+
+    // Apply Dynamic Configs on Page Load
+    document.addEventListener("DOMContentLoaded", function() {
+      if (APP_CONFIG.loginLogoUrl) {
+        const logoImg = document.getElementById('app-logo-img');
+        if (logoImg) logoImg.src = APP_CONFIG.loginLogoUrl;
+      }
+      if (APP_CONFIG.appIconUrl) {
+        const favicon = document.getElementById('head-favicon');
+        const appleIcon = document.getElementById('head-apple-icon');
+        if (favicon) favicon.href = APP_CONFIG.appIconUrl;
+        if (appleIcon) appleIcon.href = APP_CONFIG.appIconUrl;
+      }
+      if (APP_CONFIG.bgUrl) {
+        document.body.style.backgroundImage = `linear-gradient(to bottom, rgba(4, 39, 39, 0.82), rgba(9, 58, 57, 0.90)), url('${APP_CONFIG.bgUrl}')`;
+      }
+    });
 
     // --- API SERVER BRIDGE FUNCTION (VERCEL & LOCAL SUPPORT) ---
     function callServer(funcName, ...args) {
