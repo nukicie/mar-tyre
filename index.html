@@ -1,1 +1,1188 @@
-te
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAR Tyreman</title>
+
+  <!-- PWA / App Icon Configuration for Installed Mobile App (Android & iOS) -->
+  <link rel="icon" type="image/png" id="head-favicon" href="https://lh3.googleusercontent.com/d/1BMvhm1pZMW3oH89eYzj2NykcDImQuLpV">
+  <link rel="apple-touch-icon" id="head-apple-icon" href="https://lh3.googleusercontent.com/d/1BMvhm1pZMW3oH89eYzj2NykcDImQuLpV">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="MAR Tyreman">
+  <meta name="apple-mobile-web-app-capable" ent="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" ent="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MAR Tyreman">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              teal: '#0E8583',       
+              tealDark: '#074847',   
+              tealLight: '#e6f3f3',  
+              slate: '#7FA7B0',      
+              slateDark: '#41636b',
+              yellow: '#FFC301',     
+              yellowHover: '#e0a900',
+              surface: 'rgba(240, 248, 248, 0.94)', 
+              cardDark: '#093a39',   
+              border: '#7FA7B0',     
+              textDark: '#042727',   
+              success: '#0E8583',
+              warning: '#d97706',
+              danger: '#b91c1c'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Montserrat', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-image: 
+        linear-gradient(to bottom, rgba(4, 39, 39, 0.82), rgba(9, 58, 57, 0.90)),
+        url('https://lh3.googleusercontent.com/d/1vZl9nBUEJlsYOol_KIYSzsoiVHwpQvrx');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Inter', sans-serif;
+      color: #042727;
+      min-height: 100vh;
+      margin: 0;
+      padding-bottom: 85px;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    .bg-tyre-card {
+      background-color: rgba(240, 248, 248, 0.94);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(127, 167, 176, 0.8);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spinSlow 20s linear infinite;
+    }
+
+    .hidden { display: none !important; }
+
+    .btn-pos {
+      width: 42px;
+      height: 42px;
+      margin: 2px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border: 1.5px solid #7FA7B0;
+      background: #e6f3f3;
+      color: #042727;
+      transition: all 0.2s ease;
+    }
+    .btn-pos.active {
+      background-color: #0E8583 !important;
+      color: #ffffff !important;
+      border-color: #FFC301 !important;
+      box-shadow: 0 4px 8px rgba(14, 133, 131, 0.4);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .cal-day-label {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #074847;
+      padding-bottom: 4px;
+    }
+    .cal-date {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1px solid #7FA7B0;
+      transition: all 0.2s ease;
+    }
+    .cal-empty { background: transparent; border: none; cursor: default; }
+    .cal-green { background-color: #0E8583 !important; color: white !important; border-color: #074847 !important; }
+    .cal-yellow { background-color: #FFC301 !important; color: #042727 !important; border-color: #d97706 !important; }
+    .cal-red { background-color: #b91c1c !important; color: white !important; }
+    .cal-white { background-color: rgba(230, 243, 243, 0.85); color: #042727; }
+    .cal-today { ring: 3px solid #FFC301 !important; border-color: #FFC301 !important; font-size: 0.95rem; font-weight: 900; }
+
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .cart-item {
+      border-left: 5px solid #0E8583;
+      background: rgba(240, 248, 248, 0.96);
+      padding: 12px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      position: relative;
+      border: 1px solid #7FA7B0;
+    }
+    .btn-remove-item {
+      position: absolute;
+      right: 12px;
+      top: 10px;
+      color: #b91c1c;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .badge-rekan {
+      background-color: #0E8583;
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid #FFC301;
+    }
+    .btn-del-rekan { cursor: pointer; color: #FFC301; font-weight: bold; }
+
+    .nav-btn-item {
+      transition: all 0.25s ease;
+      border-radius: 12px;
+      padding: 6px 14px;
+    }
+    .nav-btn-item.active {
+      background-color: #0E8583;
+      color: #FFC301 !important;
+      box-shadow: 0 4px 12px rgba(14, 133, 131, 0.45);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="max-w-md md:max-w-xl lg:max-w-2xl mx-auto px-3 pt-2 md:pt-6">
+
+    <!-- ================= PAGE LOGIN ================= -->
+    <div id="login-page" class="min-h-[85vh] flex flex-col items-center justify-center text-center p-4">
+      
+      <div class="flex justify-center my-6 relative">
+        <div class="w-28 h-28 rounded-full bg-brand-surface backdrop-blur border-4 border-brand-teal shadow-2xl flex items-center justify-center text-brand-teal text-5xl relative z-10 overflow-hidden">
+          <img id="app-logo-img" src="https://lh3.googleusercontent.com/d/1BMvhm1pZMW3oH89eYzj2NykcDImQuLpV" alt="Logo Tyre" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/150x150/0E8583/FFC301?text=TYRE';">
+        </div>
+        <div class="absolute -top-1 w-32 h-32 rounded-full border-4 border-dashed border-brand-yellow animate-spin-slow"></div>
+      </div>
+
+      <h2 id="app-title-text" class="font-display font-black text-2xl text-amber-100 tracking-wider uppercase drop-shadow-md">
+        MAR TYREMAN
+      </h2>
+      <p id="app-subtitle-text" class="text-xs font-bold text-brand-yellow uppercase tracking-widest mb-8 drop-shadow">
+        MAR SYSTEM TYRE MANAGEMENT
+      </p>
+
+      <div class="w-full max-w-xs space-y-4 text-left">
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase tracking-wider text-teal-100 mb-1">Nomor Registrasi Pegawai (NRP)</label>
+          <input type="number" id="nrp" inputmode="numeric" placeholder="Masukkan NRP" class="w-full bg-brand-surface border-2 border-brand-border text-brand-textDark placeholder-brand-tealDark/60 text-sm rounded-2xl p-3.5 font-bold focus:outline-none focus:ring-2 focus:ring-brand-yellow shadow-inner">
+        </div>
+        
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase tracking-wider text-teal-100 mb-1">PIN Keamanan</label>
+          <input type="password" id="pin" placeholder="Masukkan PIN" class="w-full bg-brand-surface border-2 border-brand-border text-brand-textDark placeholder-brand-tealDark/60 text-sm rounded-2xl p-3.5 font-bold focus:outline-none focus:ring-2 focus:ring-brand-yellow shadow-inner">
+        </div>
+
+        <button onclick="doLogin()" class="w-full mt-4 py-4 bg-brand-teal hover:bg-brand-tealDark text-white font-extrabold text-xs rounded-2xl shadow-xl tracking-wider uppercase transition-all flex items-center justify-center gap-2 border-2 border-brand-yellow">
+          <span>LOGIN SYSTEM</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ================= MAIN DASHBOARD ================= -->
+    <div id="main-dashboard" class="hidden space-y-4">
+
+      <div class="bg-brand-tealDark/95 backdrop-blur text-white rounded-2xl p-4 shadow-xl border-2 border-brand-yellow flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-yellow text-brand-tealDark flex items-center justify-center font-black text-lg shadow">
+            <i class="fa-solid fa-helmet-safety"></i>
+          </div>
+          <div>
+            <h5 id="user-info" class="font-display font-extrabold text-sm text-amber-100">Halo, User</h5>
+            <p id="user-role" class="text-[10px] text-brand-yellow font-bold uppercase tracking-wider"></p>
+          </div>
+        </div>
+        <button onclick="setupDashboard()" class="bg-brand-teal/50 hover:bg-brand-teal text-white text-xs font-bold px-3 py-1.5 rounded-xl transition border border-brand-yellow/50">
+          <i class="fa-solid fa-rotate-right mr-1"></i> Refresh
+        </button>
+      </div>
+
+      <!-- VIEW 1: BERANDA VIEW -->
+      <div id="beranda-view" class="space-y-4">
+        
+        <div id="jam-stats-container" class="bg-tyre-card rounded-2xl p-4 shadow-md hidden border border-brand-border">
+          <div class="flex justify-between items-center text-xs font-extrabold text-brand-tealDark mb-2">
+            <span><i class="fa-solid fa-clock text-brand-teal mr-1"></i> Progress Jam Hari Ini</span>
+            <span id="jam-text-digital" class="font-mono text-brand-teal font-extrabold">0.0 / 10.5 Jam</span>
+          </div>
+          <div class="w-full h-4 bg-brand-tealLight rounded-full overflow-hidden p-0.5 border border-brand-border">
+            <div id="jam-bar" class="h-full bg-brand-teal rounded-full text-[9px] font-extrabold text-white flex items-center justify-center shadow transition-all duration-500" style="width: 0%">
+              0%
+            </div>
+          </div>
+        </div>
+
+        <div id="invite-section" class="hidden"></div>
+
+        <div id="menu-tyreman" class="hidden pt-1">
+          <button onclick="openForm()" class="w-full py-4 bg-brand-teal hover:bg-brand-tealDark text-white font-extrabold text-xs rounded-2xl shadow-xl tracking-wider uppercase transition-all flex items-center justify-center gap-2 border-2 border-brand-yellow">
+            <i class="fa-solid fa-circle-plus text-base text-brand-yellow"></i>
+            <span>+ BUAT LAPORAN SHIFT</span>
+          </button>
+        </div>
+
+        <div id="menu-gl" class="hidden space-y-2">
+          <h6 class="font-display font-extrabold text-xs text-amber-100 uppercase tracking-wider px-1 drop-shadow">
+            <i class="fa-solid fa-user-check text-brand-yellow mr-1"></i> Approval Group Leader
+          </h6>
+          <div id="gl-list"></div>
+        </div>
+
+        <div id="menu-admin" class="hidden space-y-2">
+          <h6 class="font-display font-extrabold text-xs text-amber-100 uppercase tracking-wider px-1 drop-shadow">
+            <i class="fa-solid fa-user-shield text-brand-yellow mr-1"></i> Antrian Admin
+          </h6>
+          <div id="admin-list"></div>  
+        </div>
+
+      </div>
+
+      <!-- VIEW 2: REKAP VIEW -->
+      <div id="rekap-view" class="hidden space-y-3">
+        <div id="calendar-section" class="bg-tyre-card rounded-2xl p-4 shadow-md border border-brand-border">
+          <div class="flex justify-between items-center mb-3">
+            <h6 class="font-display font-extrabold text-xs text-brand-tealDark uppercase tracking-wider">
+              <i class="fa-solid fa-calendar-days text-brand-teal mr-1"></i> Rekap MAR Tyreman
+            </h6>
+            <span id="cal-month-name" class="text-xs font-black text-brand-teal"></span>
+          </div>
+
+          <div id="calendar-container" class="calendar-grid">
+            <div class="cal-day-label">S</div><div class="cal-day-label">S</div><div class="cal-day-label">R</div>
+            <div class="cal-day-label">K</div><div class="cal-day-label">J</div><div class="cal-day-label">S</div><div class="cal-day-label">M</div>
+          </div>
+
+          <div class="flex justify-center gap-4 mt-4 text-[10px] font-bold text-brand-tealDark border-t border-brand-border/40 pt-3">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-md bg-brand-teal"></span> OK (>=10.5)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-md bg-brand-yellow"></span> Pending</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-md bg-brand-tealLight border border-brand-border"></span> Kosong</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= FORM PAGE ================= -->
+    <div id="form-page" class="hidden space-y-4">
+      
+      <div class="sticky-header">
+        <div class="bg-tyre-card rounded-2xl p-3.5 shadow-md space-y-2 border border-brand-border">
+          
+          <div id="reject-info-area" class="hidden">
+            <button class="w-full py-2 bg-rose-700 text-white text-xs font-bold rounded-xl shadow mb-2 flex items-center justify-center gap-1" type="button" onclick="toggleRejectCollapse()">
+              <i class="fa-solid fa-triangle-exclamation"></i> ADA LAPORAN DITOLAK (Klik Detail)
+            </button>
+            <div id="collapseReject" class="hidden">
+              <div id="reject-list-detail" class="bg-rose-50 border-l-4 border-rose-600 p-2.5 rounded-xl text-xs text-slate-800 space-y-1 mb-2"></div>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-extrabold text-brand-teal uppercase tracking-wider">STEP 1: SHIFT & TIM</span>
+            <span id="live-total-counter" class="text-xs font-bold bg-brand-tealDark text-brand-yellow px-2.5 py-1 rounded-lg shadow border border-brand-yellow/40">Total: 0.0 / 10.5</span>
+          </div>
+
+          <div class="grid grid-cols-1 gap-2">
+            <select id="f_shift" onchange="updateLiveCounter()" class="w-full bg-brand-tealLight border border-brand-border text-brand-tealDark font-bold text-xs rounded-xl p-2.5 focus:outline-none">
+              <option value="1">SHIFT 1 (SIANG)</option>
+              <option value="2">SHIFT 2 (MALAM)</option>
+            </select>
+            
+            <select id="f_gl" class="w-full bg-brand-tealLight border border-brand-border text-brand-tealDark font-bold text-xs rounded-xl p-2.5 focus:outline-none">
+            </select>
+          </div>
+
+          <div class="pt-1">
+            <label class="text-[10px] font-extrabold text-brand-tealDark block mb-1">REKAN TIM (OPSIONAL):</label>
+            <input list="list_rekan" id="f_partner_input" oninput="autoAddPartner(this)" placeholder="Ketik nama rekan..." class="w-full bg-brand-tealLight border border-brand-border text-brand-tealDark text-xs rounded-xl p-2 font-bold focus:outline-none placeholder-brand-tealDark/50">
+            <datalist id="list_rekan"></datalist>
+            <div id="selected_partners" class="flex flex-wrap gap-1.5 mt-2"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="bg-tyre-card rounded-2xl p-4 shadow-md space-y-3 border border-brand-border">
+        <span class="text-[10px] font-extrabold text-brand-teal uppercase tracking-wider block">STEP 2: INPUT PEKERJAAN</span>
+        
+        <input list="list_job" id="f_job" onchange="handleJobChange()" autocomplete="off" placeholder="-- PILIH / KETIK JOB --" class="w-full bg-brand-tealLight border border-brand-border text-brand-tealDark font-black text-xs rounded-xl p-3 focus:outline-none placeholder-brand-tealDark/50">
+        <datalist id="list_job"></datalist>
+
+        <div class="grid grid-cols-12 gap-2">
+          <div class="col-span-7">
+            <input list="list_unit" id="f_unit" autocomplete="off" placeholder="Cari Code Unit..." class="w-full bg-brand-tealLight border border-brand-border text-brand-tealDark font-extrabold text-xs rounded-xl p-2.5 focus:outline-none placeholder-brand-tealDark/50">
+            <datalist id="list_unit"></datalist>
+          </div>
+          <div class="col-span-5">
+            <input type="number" id="f_hm" inputmode="numeric" placeholder="HM Unit" class="w-full bg-brand-tealLight border border-brand-border text-brand-tealDark font-extrabold text-xs rounded-xl p-2.5 focus:outline-none placeholder-brand-tealDark/50">
+          </div>
+        </div>
+
+        <div id="pos-panel" class="text-center hidden pt-1">
+          <label class="text-[10px] font-extrabold text-brand-tealDark block mb-1">POSISI BAN (WHEEL POSITION):</label>
+          <div class="flex flex-wrap justify-center gap-1 mb-2">
+            <script>
+              for(let i=1; i<=12; i++) {
+                document.write(`<button type="button" class="btn-pos" onclick="this.classList.toggle('active')">${i}</button>`);
+              }
+            </script>
+          </div>
+          <button type="button" id="btn-all-pos" onclick="allPos(this)" class="w-full py-2 bg-brand-tealLight hover:bg-brand-slate/30 border border-brand-border text-brand-tealDark font-extrabold text-xs rounded-xl transition">
+            ALL POS
+          </button>
+        </div>
+
+        <div id="jam-panel" class="grid grid-cols-2 gap-2 pt-1">
+          <div>
+            <label class="text-[10px] font-extrabold text-brand-tealDark block mb-1">WAKTU MULAI</label>
+            <input type="time" id="f_mulai" onchange="updateLiveCounter()" class="w-full bg-brand-tealLight border border-brand-border text-brand-tealDark font-extrabold text-xs rounded-xl p-2.5 text-center focus:outline-none">
+          </div>
+          <div>
+            <label class="text-[10px] font-extrabold text-brand-tealDark block mb-1">WAKTU AKHIR</label>
+            <input type="time" id="f_akhir" onchange="updateLiveCounter()" class="w-full bg-brand-tealLight border border-brand-border text-brand-tealDark font-extrabold text-xs rounded-xl p-2.5 text-center focus:outline-none">
+          </div>
+        </div>
+
+        <button onclick="addToCart()" class="w-full py-3 bg-brand-teal hover:bg-brand-tealDark text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5 uppercase tracking-wider border border-brand-yellow">
+          <i class="fa-solid fa-plus text-brand-yellow"></i> TAMBAH KE LIST
+        </button>
+      </div>
+
+      <div id="cart-section" class="hidden space-y-3">
+        <div id="job-cart"></div>
+        <button id="btnFinal" onclick="finalSubmit()" class="w-full py-3.5 bg-brand-teal hover:bg-brand-tealDark text-white font-extrabold text-xs rounded-xl shadow-lg uppercase tracking-wider transition border-2 border-brand-yellow">
+          KIRIM SEMUA LAPORAN
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ================= BOTTOM NAVIGATION BAR ================= -->
+  <div id="app-bottom-nav" class="fixed bottom-0 left-0 right-0 h-16 bg-brand-surface/95 backdrop-blur border-t border-brand-border flex items-center justify-around z-50 px-2 shadow-2xl hidden max-w-md md:max-w-xl lg:max-w-2xl mx-auto">
+    <button onclick="navClick('beranda')" id="nav-beranda" class="nav-btn-item flex flex-col items-center justify-center active">
+      <i class="fa-solid fa-house text-sm"></i>
+      <span class="text-[9px] font-extrabold mt-0.5">Beranda</span>
+    </button>
+    <button onclick="navClick('laporan')" id="nav-laporan" class="nav-btn-item flex flex-col items-center justify-center text-brand-tealDark">
+      <i class="fa-solid fa-circle-plus text-sm"></i>
+      <span class="text-[9px] font-extrabold mt-0.5">Laporan</span>
+    </button>
+    <button onclick="navClick('rekap')" id="nav-rekap" class="nav-btn-item flex flex-col items-center justify-center text-brand-tealDark">
+      <i class="fa-solid fa-calendar-days text-sm"></i>
+      <span class="text-[9px] font-extrabold mt-0.5">Rekap</span>
+    </button>
+    <button onclick="navClick('logout')" id="nav-logout" class="nav-btn-item flex flex-col items-center justify-center text-rose-800 hover:text-rose-900">
+      <i class="fa-solid fa-right-from-bracket text-sm"></i>
+      <span class="text-[9px] font-extrabold mt-0.5">Logout</span>
+    </button>
+  </div>
+
+  <!-- CUSTOM TOAST MODAL -->
+  <div id="customToastModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden p-4">
+    <div class="bg-brand-surface border-2 border-brand-teal rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden text-center p-5 space-y-4">
+      <div id="toastIcon" class="w-12 h-12 rounded-full mx-auto flex items-center justify-center text-2xl"></div>
+      <div>
+        <h5 id="toastTitle" class="font-display font-extrabold text-sm text-brand-tealDark uppercase">Notifikasi</h5>
+        <p id="toastMessage" class="text-xs text-brand-textDark font-semibold mt-1"></p>
+      </div>
+      <button onclick="closeToastModal()" class="w-full py-2.5 bg-brand-teal hover:bg-brand-tealDark text-white text-xs font-bold rounded-xl shadow transition">
+        Mengerti
+      </button>
+    </div>
+  </div>
+
+  <!-- CUSTOM CONFIRM MODAL -->
+  <div id="customConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden p-4">
+    <div class="bg-brand-surface border-2 border-brand-teal rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden text-center p-5 space-y-4">
+      <div class="w-12 h-12 rounded-full bg-brand-yellow/20 text-brand-tealDark border border-brand-yellow mx-auto flex items-center justify-center text-2xl">
+        <i class="fa-solid fa-circle-question"></i>
+      </div>
+      <div>
+        <h5 id="confirmTitle" class="font-display font-extrabold text-sm text-brand-tealDark uppercase">Konfirmasi</h5>
+        <p id="confirmMessage" class="text-xs text-brand-textDark font-semibold mt-1"></p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-2">
+        <button id="btnConfirmCancel" onclick="closeConfirmModal(false)" class="py-2.5 bg-gray-300 hover:bg-gray-400 text-gray-800 text-xs font-bold rounded-xl transition">
+          Batal
+        </button>
+        <button id="btnConfirmOk" onclick="closeConfirmModal(true)" class="py-2.5 bg-brand-teal hover:bg-brand-tealDark text-white text-xs font-bold rounded-xl shadow transition">
+          Lanjutkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div id="modalDetail" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden p-4">
+    <div class="bg-brand-surface border-2 border-brand-teal rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden">
+      <div class="border-b border-brand-border/60 p-3 flex justify-between items-center bg-brand-tealDark text-white">
+        <h6 class="font-extrabold text-xs tracking-wide" id="detailDateTitle">Detail Pekerjaan</h6>
+        <button type="button" onclick="closeModalDetail()" class="text-white/80 hover:text-white font-bold text-sm px-2">✕</button>
+      </div>
+      <div class="p-3 max-h-[60vh] overflow-y-auto space-y-2" id="detailBody"></div>
+      <div class="p-2 border-t border-brand-border/40 text-right bg-brand-tealLight/50">
+        <button onclick="closeModalDetail()" class="px-4 py-1.5 bg-brand-teal text-white text-xs font-bold rounded-xl shadow hover:bg-brand-tealDark transition">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL-SCREEN LOADING OVERLAY -->
+  <div id="globalLoadingModal" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/75 backdrop-blur-md hidden transition-all duration-300">
+    <div class="relative flex items-center justify-center mb-4">
+      <div class="w-24 h-24 rounded-full border-4 border-dashed border-brand-yellow animate-spin-slow"></div>
+      <div class="absolute w-16 h-16 rounded-full bg-brand-tealDark border-2 border-brand-yellow flex items-center justify-center text-brand-yellow text-3xl shadow-2xl animate-spin">
+        <i class="fa-solid fa-compact-disc"></i>
+      </div>
+    </div>
+    <div id="loadingText" class="font-display font-black text-sm text-amber-100 uppercase tracking-widest text-center px-4 drop-shadow">
+      MEMPROSES DATA...
+    </div>
+    <p class="text-[10px] text-brand-yellow font-bold mt-1 tracking-wider uppercase">MOHON TUNGGU SEBENTAR</p>
+  </div>
+
+  <!-- ================= JAVASCRIPT CODEBASE ================= -->
+  <script>
+    // --- APP CONFIGURATION BLOCK ---
+    const APP_CONFIG = {
+      appName: "MAR Tyreman",
+      // 1. Logo yang tampil di TENGAH HALAMAN LOGIN
+      loginLogoUrl: "https://lh3.googleusercontent.com/d/1BMvhm1pZMW3oH89eYzj2NykcDImQuLpV",
+      // 2. Logo/Ikon APLIKASI saat DI-INSTALL DI HOMESCREEN HP (Android/iOS)
+      appIconUrl: "https://lh3.googleusercontent.com/d/1WDQixtYrPbf5cMuTMTpJAISmezDlPvcG",
+      // 3. Foto Wallpaper Background
+      bgUrl: "https://lh3.googleusercontent.com/d/1vZl9nBUEJlsYOol_KIYSzsoiVHwpQvrx",
+      // 4. Endpoint Web App Google Apps Script
+      gasApiUrl: "https://script.google.com/macros/s/AKfycbyiaW4NUYBaCy0YVriC2oXRH6TJwklCcfz-aBdzFvj1wgQ_Fr7LTA4IrTl4PrlhgSJh/exec"
+    };
+
+    // Apply Dynamic Configs on Page Load
+    document.addEventListener("DOMContentLoaded", function() {
+      if (APP_CONFIG.loginLogoUrl) {
+        const logoImg = document.getElementById('app-logo-img');
+        if (logoImg) logoImg.src = APP_CONFIG.loginLogoUrl;
+      }
+      if (APP_CONFIG.appIconUrl) {
+        const favicon = document.getElementById('head-favicon');
+        const appleIcon = document.getElementById('head-apple-icon');
+        if (favicon) favicon.href = APP_CONFIG.appIconUrl;
+        if (appleIcon) appleIcon.href = APP_CONFIG.appIconUrl;
+      }
+      if (APP_CONFIG.bgUrl) {
+        document.body.style.backgroundImage = `linear-gradient(to bottom, rgba(4, 39, 39, 0.82), rgba(9, 58, 57, 0.90)), url('${APP_CONFIG.bgUrl}')`;
+      }
+    });
+
+    // --- API SERVER BRIDGE FUNCTION (VERCEL & LOCAL SUPPORT) ---
+    function callServer(funcName, ...args) {
+      return new Promise((resolve, reject) => {
+        if (typeof google !== 'undefined' && google.script && google.script.run && (!APP_CONFIG.gasApiUrl || window.location.hostname.includes("script.google.com"))) {
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(reject)[funcName](...args);
+        } else {
+          fetch(APP_CONFIG.gasApiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: funcName, args: args }),
+            redirect: 'follow'
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.error) reject(data.error);
+            else resolve(data);
+          })
+          .catch(err => reject(err));
+        }
+      });
+    }
+
+    let confirmCallback = null;
+    let user = {}, master = {}, cart = [], selectedPartners = [];
+    let serverTotalJam = 0; 
+
+    function showLoading(msg = 'MEMPROSES DATA...') {
+      const el = document.getElementById('globalLoadingModal');
+      const txt = document.getElementById('loadingText');
+      if (txt) txt.innerText = msg;
+      if (el) el.classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      const el = document.getElementById('globalLoadingModal');
+      if (el) el.classList.add('hidden');
+    }
+
+    function showAlertModal(msg, type = 'info', title = 'Informasi') {
+      const toast = document.getElementById('customToastModal');
+      const icon = document.getElementById('toastIcon');
+      const titleEl = document.getElementById('toastTitle');
+      const msgEl = document.getElementById('toastMessage');
+
+      titleEl.innerText = title;
+      msgEl.innerText = msg;
+
+      if (type === 'error') {
+        icon.className = 'w-12 h-12 rounded-full mx-auto flex items-center justify-center text-2xl bg-rose-100 text-rose-700 border border-rose-400';
+        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+      } else if (type === 'warning') {
+        icon.className = 'w-12 h-12 rounded-full mx-auto flex items-center justify-center text-2xl bg-amber-100 text-amber-700 border border-amber-400';
+        icon.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+      } else {
+        icon.className = 'w-12 h-12 rounded-full mx-auto flex items-center justify-center text-2xl bg-teal-100 text-brand-teal border border-brand-teal';
+        icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+      }
+
+      toast.classList.remove('hidden');
+    }
+
+    function closeToastModal() {
+      document.getElementById('customToastModal').classList.add('hidden');
+    }
+
+    function showConfirmModal(msg, title = 'Konfirmasi', onConfirm) {
+      document.getElementById('confirmTitle').innerText = title;
+      document.getElementById('confirmMessage').innerText = msg;
+      confirmCallback = onConfirm;
+      document.getElementById('customConfirmModal').classList.remove('hidden');
+    }
+
+    function closeConfirmModal(result) {
+      document.getElementById('customConfirmModal').classList.add('hidden');
+      if (result && typeof confirmCallback === 'function') {
+        confirmCallback();
+      }
+      confirmCallback = null;
+    }
+
+    function showPage(id) {
+      document.getElementById('login-page').classList.add('hidden');
+      document.getElementById('main-dashboard').classList.add('hidden');
+      document.getElementById('form-page').classList.add('hidden');
+      
+      const target = document.getElementById(id);
+      if(target) target.classList.remove('hidden');
+
+      const nav = document.getElementById('app-bottom-nav');
+      if (id === 'login-page') {
+        nav.classList.add('hidden');
+      } else {
+        nav.classList.remove('hidden');
+      }
+    }
+
+    function navClick(tab) {
+      ['beranda', 'laporan', 'rekap'].forEach(t => {
+        const el = document.getElementById('nav-' + t);
+        if(el) {
+          el.classList.remove('active');
+          el.classList.add('text-brand-tealDark');
+        }
+      });
+
+      const activeEl = document.getElementById('nav-' + tab);
+
+      if (tab === 'beranda') {
+        if(activeEl) { activeEl.classList.add('active'); activeEl.classList.remove('text-brand-tealDark'); }
+        showPage('main-dashboard');
+        document.getElementById('beranda-view').classList.remove('hidden');
+        document.getElementById('rekap-view').classList.add('hidden');
+      } else if (tab === 'laporan') {
+        if (user.role && user.role.toUpperCase() !== 'TYREMAN') {
+          return showAlertModal("Menu Laporan khusus untuk Tyreman.", "warning", "Akses Dibatasi");
+        }
+        if(activeEl) { activeEl.classList.add('active'); activeEl.classList.remove('text-brand-tealDark'); }
+        openForm();
+      } else if (tab === 'rekap') {
+        if(activeEl) { activeEl.classList.add('active'); activeEl.classList.remove('text-brand-tealDark'); }
+        showPage('main-dashboard');
+        document.getElementById('beranda-view').classList.add('hidden');
+        document.getElementById('rekap-view').classList.remove('hidden');
+        renderCalendar();
+      } else if (tab === 'logout') {
+        doLogout();
+      }
+    }
+
+    function doLogout() {
+      showConfirmModal("Apakah Anda yakin ingin logout dari " + APP_CONFIG.appName + "?", "Keluar Aplikasi", () => {
+        user = {};
+        cart = [];
+        selectedPartners = [];
+        serverTotalJam = 0;
+
+        document.getElementById('nrp').value = '';
+        document.getElementById('pin').value = '';
+        document.getElementById('job-cart').innerHTML = '';
+        document.getElementById('cart-section').classList.add('hidden');
+
+        showPage('login-page');
+      });
+    }
+
+    function doLogin() {
+      const n = document.getElementById('nrp').value, p = document.getElementById('pin').value;
+      if(!n || !p) return showAlertModal("Isi NRP dan PIN!", "warning", "Lengkapi Login");
+      showLoading("MELAKUKAN LOGIN SYSTEM...");
+
+      callServer('loginUser', n, p).then(res => {
+        hideLoading();
+        if(res.status === 'success') {
+          user = res;
+          document.getElementById('user-info').innerText = res.nama;
+          document.getElementById('user-role').innerText = "NRP: " + res.nrp + " | " + res.role;
+          showPage('main-dashboard');
+          setupDashboard();
+          loadMaster();
+        } else {
+          showAlertModal('NRP atau PIN Salah!', 'error', 'Gagal Login');
+        }
+      }).catch(err => {
+        hideLoading();
+        showAlertModal('Terjadi kesalahan koneksi server.', 'error', 'Gagal Login');
+      });
+    }
+
+    function setupDashboard() {
+      const r = (user.role || '').toUpperCase();
+      
+      document.getElementById('menu-tyreman').classList.toggle('hidden', r !== 'TYREMAN');
+      document.getElementById('menu-gl').classList.toggle('hidden', r !== 'GROUP LEADER');
+      document.getElementById('menu-admin').classList.toggle('hidden', r !== 'ADMIN');
+      
+      const btnNavLaporan = document.getElementById('nav-laporan');
+      const btnNavRekap = document.getElementById('nav-rekap');
+
+      if (r === 'ADMIN' || r === 'GROUP LEADER') {
+        if (btnNavLaporan) btnNavLaporan.style.display = 'none';
+        if (btnNavRekap) btnNavRekap.style.display = 'none';
+      } else {
+        if (btnNavLaporan) btnNavLaporan.style.display = 'flex';
+        if (btnNavRekap) btnNavRekap.style.display = 'flex';
+      }
+
+      document.getElementById('beranda-view').classList.remove('hidden');
+      document.getElementById('rekap-view').classList.add('hidden');
+      
+      navClick('beranda');
+
+      if(r === 'TYREMAN') {
+        document.getElementById('jam-stats-container').classList.remove('hidden');
+        refreshTyremanData();
+      } else {
+        document.getElementById('jam-stats-container').classList.add('hidden');
+      }
+
+      if(r === 'GROUP LEADER') loadGLData();
+      if(r === 'ADMIN') loadAdminData();
+    }
+
+    function renderCalendar() {
+      const container = document.getElementById('calendar-container');
+      const monthNameEl = document.getElementById('cal-month-name');
+      
+      const labels = container.querySelectorAll('.cal-day-label');
+      container.innerHTML = "";
+      labels.forEach(l => container.appendChild(l));
+
+      const now = new Date();
+      const month = now.getMonth();
+      const year = now.getFullYear();
+      monthNameEl.innerText = now.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      let startGrid = firstDay === 0 ? 6 : firstDay - 1; 
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < startGrid; i++) {
+        let div = document.createElement('div');
+        div.className = "cal-date cal-empty";
+        container.appendChild(div);
+      }
+
+      callServer('getMonthlyAttendance', user.nrp).then(res => {
+        if(!res || res.error) return;
+        const rekap = res.rekap;
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          let div = document.createElement('div');
+          let info = rekap[d-1] || { status: 'EMPTY', jam: 0 };
+          let colorClass = "cal-white";
+          
+          if (info.status === "APPROVED_FULL") colorClass = "cal-green";
+          else if (info.status === "PENDING") colorClass = "cal-yellow";
+          else if (info.status === "REJECTED") colorClass = "cal-red";
+          
+          div.className = `cal-date ${colorClass}`;
+          if(d === now.getDate()) div.classList.add('cal-today');
+          div.innerText = d;
+          
+          div.onclick = () => showDetailAktivitas(d, info.jam, info.status);
+          container.appendChild(div);
+        }
+      });
+    }
+
+    function showDetailAktivitas(tgl, jamTotal, status) {
+      const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+      const year = new Date().getFullYear();
+      const dateStr = tgl.toString().padStart(2, '0') + "/" + month + "/" + year;
+      
+      let statusText = status === "PENDING" ? " (PENDING)" : "";
+      document.getElementById('detailDateTitle').innerText = "Tanggal: " + dateStr + statusText;
+      
+      const body = document.getElementById('detailBody');
+      body.innerHTML = '<div class="text-center p-3 text-xs font-bold text-brand-tealDark">Mencari aktivitas...</div>';
+      
+      document.getElementById('modalDetail').classList.remove('hidden');
+
+      callServer('getDetailAktivitasHarian', user.nrp, dateStr).then(data => {
+        if (!data || data.length === 0) {
+          body.innerHTML = '<div class="text-center p-3 text-xs text-brand-tealDark/70 font-bold">Tidak ada data.</div>';
+        } else {
+          body.innerHTML = data.map(item => `
+            <div class="p-2 border-b border-brand-border/40">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-brand-teal text-xs">${item.unit}</span>
+                <span class="badge ${item.status === 'APPROVED' ? 'bg-brand-teal text-white' : 'bg-brand-yellow text-brand-tealDark'} text-[9px] px-1.5 py-0.5 rounded font-bold">${item.status}</span>
+              </div>
+              <div class="text-xs font-semibold text-brand-tealDark mt-0.5">${item.job}</div>
+              <div class="text-[10px] text-brand-tealDark/70 font-bold">Durasi: ${item.durasi} Jam</div>
+            </div>
+          `).join('');
+        }
+      });
+    }
+
+    function closeModalDetail() {
+      document.getElementById('modalDetail').classList.add('hidden');
+    }
+
+    function toggleRejectCollapse() {
+      const el = document.getElementById('collapseReject');
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function refreshTyremanData() {
+      let tgl = getTodayString();
+      let shift = getAutoShift();
+
+      callServer('getTyremanStatus', user.nrp, tgl, "SHIFT " + shift).then(data => {
+        if(!data) return;
+        serverTotalJam = data.totalJamTerkirim || 0;
+        updateProgressBar(serverTotalJam);
+        
+        const sect = document.getElementById('invite-section');
+        if (data.invitations && data.invitations.length > 0) {
+          sect.classList.remove('hidden');
+          sect.innerHTML = data.invitations.map(i => `
+            <div class="bg-brand-tealLight border border-brand-teal p-3 rounded-2xl shadow-sm mb-3">
+              <div class="text-xs font-bold text-brand-tealDark">Undangan Tim! (${i.totalJamPaket} Jam)</div>
+              <div class="text-[10px] text-brand-tealDark/80 font-semibold mb-1.5">Host: ${i.host}</div>
+              <button id="btn-join-${i.activityId}" class="w-full py-2 bg-brand-teal hover:bg-brand-tealDark text-white text-xs font-extrabold rounded-xl transition shadow-sm border border-brand-yellow" onclick="joinTim('${i.activityId}')">
+                TERIMA JOIN
+              </button>
+            </div>
+          `).join(''); 
+        } else {
+          sect.classList.add('hidden');
+        }
+        
+        const rejectArea = document.getElementById('reject-info-area');
+        const rejectList = document.getElementById('reject-list-detail');
+        if (data.rejectedLaporan && data.rejectedLaporan.length > 0) {
+          rejectArea.classList.remove('hidden');
+          rejectList.innerHTML = data.rejectedLaporan.map(r => `
+            <div class="border-b border-rose-200 pb-1 text-xs">
+              <strong>${r.unit} - ${r.job} (${r.durasi} Jam)</strong><br><span class="text-rose-700 font-semibold">Alasan: ${r.alasan}</span>
+            </div>`).join('');
+        } else {
+          rejectArea.classList.add('hidden');
+        }
+      });
+    }
+
+    function updateProgressBar(jam) {
+      const percent = Math.min((jam / 10.5) * 100, 100);
+      const bar = document.getElementById('jam-bar');
+      bar.style.width = percent + "%";
+      bar.innerText = Math.round(percent) + "%";
+      document.getElementById('jam-text-digital').innerText = jam.toFixed(2) + " / 10.5 Jam";
+      if(jam >= 10.5) bar.className = "h-full bg-brand-tealDark rounded-full text-[9px] font-extrabold text-white flex items-center justify-center shadow transition-all duration-500";
+      else if(jam >= 8) bar.className = "h-full bg-brand-teal rounded-full text-[9px] font-extrabold text-white flex items-center justify-center shadow transition-all duration-500";
+      else bar.className = "h-full bg-brand-yellow text-brand-tealDark rounded-full text-[9px] font-extrabold flex items-center justify-center shadow transition-all duration-500";
+    }
+
+    function updateLiveCounter() {
+      let currentInputJam = 0;
+      const jobSelected = document.getElementById('f_job').value || "";
+      const isPitMode = jobSelected.toUpperCase().includes("PITSTOP");
+
+      cart.forEach(item => {
+        currentInputJam += parseFloat(item.durasi);
+      });
+
+      if (!isPitMode) {
+        const wM = document.getElementById('f_mulai').value;
+        const wA = document.getElementById('f_akhir').value;
+        
+        if (wM && wA) {
+          let start = new Date("2024-01-01 " + wM);
+          let end = new Date("2024-01-01 " + wA);
+          if (end < start) end.setDate(end.getDate() + 1);
+          let diff = (end - start) / 3600000;
+          if (diff > 5) diff -= 1;
+          currentInputJam += diff;
+        }
+      } else {
+        currentInputJam = 10.5;
+      }
+
+      const total = serverTotalJam + currentInputJam;
+      const counterEl = document.getElementById('live-total-counter');
+      
+      counterEl.innerText = "Total: " + total.toFixed(2) + " / 10.5";
+      counterEl.className = (total > 10.55) ? "text-xs font-bold bg-rose-700 text-white px-2.5 py-1 rounded-lg shadow" : "text-xs font-bold bg-brand-tealDark text-brand-yellow px-2.5 py-1 rounded-lg shadow border border-brand-yellow/40";
+      
+      const btnTambah = document.querySelector("button[onclick='addToCart()']");
+      if(btnTambah) btnTambah.disabled = (total > 10.55 && !isPitMode);
+    }
+
+    function getTodayString() {
+      let tglProd = new Date();
+      if (tglProd.getHours() <= 9) tglProd.setDate(tglProd.getDate() - 1);
+      return tglProd.getFullYear() + "-" + (tglProd.getMonth()+1).toString().padStart(2,'0') + "-" + tglProd.getDate().toString().padStart(2,'0');
+    }
+
+    function getAutoShift() {
+      const jam = new Date().getHours();
+      return (jam >= 18 || jam <= 6) ? "2" : "1";
+    }
+
+    function joinTim(id) {
+      const btn = document.getElementById('btn-join-' + id);
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = 'Memproses...';
+      }
+      showLoading("MEMPROSES JOIN TIM...");
+
+      callServer('processJoinEnhanced', user.nrp, user.nama, id, getTodayString(), "SHIFT " + getAutoShift()).then(msg => {
+        hideLoading();
+        showAlertModal(msg, "info", "Join Tim"); 
+        setupDashboard(); 
+      }).catch(err => {
+        hideLoading();
+        showAlertModal("Gagal memproses join tim.", "error", "Gagal");
+      });
+    }
+
+    function loadMaster() {
+      callServer('getMasterData').then(data => {
+        if(!data) return;
+        master = data;
+        document.getElementById('list_unit').innerHTML = (data.units || []).map(u => `<option value="${u[0]}">`).join('');
+        document.getElementById('f_gl').innerHTML = '<option value="">-- PILIH GL --</option>' + (data.users || []).filter(u => u[2] === 'Group Leader').map(u => `<option value="${u[1]}">${u[1]}</option>`).join('');
+        document.getElementById('list_job').innerHTML = (data.jobs || []).map(j => `<option value="${j[0]}">`).join('');
+        const rekanList = (data.users || []).filter(u => u[2] === 'Tyreman' && u[0].toString() !== (user.nrp || '').toString());
+        document.getElementById('list_rekan').innerHTML = rekanList.map(u => `<option value="${u[1]}" data-nrp="${u[0]}">`).join('');
+      });
+    }
+
+    function handleJobChange() {
+      const jobVal = document.getElementById('f_job').value;
+      const unitInput = document.getElementById('f_unit'), hmInput = document.getElementById('f_hm'), posPanel = document.getElementById('pos-panel'), jamPanel = document.getElementById('jam-panel');
+      const shift = document.getElementById('f_shift').value;
+      const selJob = (master.jobs || []).find(j => j[0].toString().trim() === jobVal.toString().trim());
+      if(!selJob) return;
+      const isPitstop = jobVal.toUpperCase().includes("PITSTOP");
+      if(isPitstop) {
+        jamPanel.classList.add('hidden');
+        if(shift === "1") { document.getElementById('f_mulai').value = "06:30"; document.getElementById('f_akhir').value = "18:00"; }
+        else { document.getElementById('f_mulai').value = "18:30"; document.getElementById('f_akhir').value = "06:00"; }
+      } else jamPanel.classList.remove('hidden');
+      posPanel.classList.toggle('hidden', (selJob[4] || "YES").toString().toUpperCase() === "NO" || isPitstop);
+      if (selJob[3].toString().toUpperCase() === "NO") { unitInput.value = "GENERAL"; unitInput.readOnly = true; hmInput.value = "0"; hmInput.readOnly = true; } 
+      else { unitInput.readOnly = false; hmInput.readOnly = false; }
+      updateLiveCounter();
+    }
+
+    function autoAddPartner(el) {
+      const opt = Array.from(document.getElementById('list_rekan').options).find(o => o.value === el.value);
+      if (opt) {
+        const nrp = opt.getAttribute('data-nrp');
+        if (!selectedPartners.find(p => p.nrp === nrp)) { selectedPartners.push({ nrp: nrp, nama: el.value }); renderSelectedPartners(); }
+        el.value = "";
+      }
+    }
+
+    function renderSelectedPartners() { document.getElementById('selected_partners').innerHTML = selectedPartners.map((p, idx) => `<span class="badge-rekan">${p.nama} <span class="btn-del-rekan" onclick="removePartner(${idx})">×</span></span>`).join(''); }
+    function removePartner(idx) { selectedPartners.splice(idx, 1); renderSelectedPartners(); }
+
+    function openForm() { 
+      showPage('form-page'); 
+      document.getElementById('f_shift').value = getAutoShift(); 
+      updateLiveCounter(); 
+      setTimeout(handleJobChange, 100); 
+    }
+
+    function allPos(btn) {
+      const act = btn.classList.toggle('active');
+      document.querySelectorAll('.btn-pos:not(.w-full)').forEach(b => b.classList.toggle('active', act));
+    }
+
+    function addToCart() {
+      const gl = document.getElementById('f_gl').value, unit = document.getElementById('f_unit').value.trim(), hm = document.getElementById('f_hm').value, jobB = document.getElementById('f_job').value.trim(), wM = document.getElementById('f_mulai').value, wA = document.getElementById('f_akhir').value, shift = document.getElementById('f_shift').value;
+      if(!gl || !unit || !hm || !jobB || !wM || !wA || !shift) return showAlertModal("Lengkapi semua isian data!", "warning", "Data Belum Lengkap");
+      if (unit !== "GENERAL" && !(master.units || []).some(u => u[0].toString().trim() === unit)) return showAlertModal("Unit tidak terdaftar di database!", "error", "Unit Tidak Valid");
+      const selJob = (master.jobs || []).find(j => j[0].toString().trim() === jobB);
+      if (!selJob) return showAlertModal("Jenis pekerjaan tidak valid!", "error", "Job Tidak Valid");
+      const pos = Array.from(document.querySelectorAll('.btn-pos.active:not(.w-full)')).map(b => b.innerText).join(',');
+      const isPit = jobB.toUpperCase().includes("PITSTOP");
+      const finalJob = (isPit || (selJob[4] || "YES").toString().toUpperCase() === "NO") ? jobB : jobB + " POS " + (document.getElementById('btn-all-pos').classList.contains('active') ? "ALL" : (pos || ""));
+      cart.push({ nrp: user.nrp, nama: user.nama, code_unit: unit, hm: hm, job_full: finalJob, task_no: selJob[1], opl3: selJob[2], waktu_mulai: wM, waktu_akhir: wA, group_leader: gl, date: getTodayString(), shift: "SHIFT " + shift, isPitstop: isPit });
+      updateCartUI();
+      document.getElementById('f_unit').value = ""; document.getElementById('f_hm').value = ""; document.getElementById('f_unit').focus();
+      document.querySelectorAll('.btn-pos').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-all-pos').classList.remove('active');
+      updateLiveCounter();
+    }
+
+    function updateCartUI() {
+      const container = document.getElementById('job-cart');
+      const isPitMode = cart.some(c => c.isPitstop);
+      let durPerUnit = isPitMode ? (10.5 / cart.length).toFixed(2) : 0;
+      container.innerHTML = cart.map((item, index) => {
+        if(isPitMode) item.durasi = durPerUnit;
+        else {
+          let start = new Date("2024-01-01 " + item.waktu_mulai), end = new Date("2024-01-01 " + item.waktu_akhir);
+          if (end < start) end.setDate(end.getDate() + 1);
+          let diff = (end - start) / 3600000;
+          let potong = 0;
+          if (item.shift.includes("1") && start.getHours() < 12 && (end.getHours() + (end.getDate()>1?24:0)) > 13) potong = 1;
+          else if (item.shift.includes("2") && (start.getHours() < 24 || start.getHours() >= 18) && (end.getHours() + (end.getDate()>1?24:0)) > 25) potong = 1;
+          item.durasi = Math.max(0, diff - potong).toFixed(2);
+        }
+        return `<div class="cart-item shadow-sm"><div class="btn-remove-item" onclick="cart.splice(${index},1);updateCartUI();updateLiveCounter()">✕</div><div class="font-extrabold text-brand-teal text-xs">${item.code_unit}</div><div class="text-xs text-brand-tealDark font-medium">${item.job_full}</div><div class="text-xs text-rose-800 font-extrabold mt-0.5">Durasi: ${item.durasi} Jam</div></div>`;
+      }).join('');
+      document.getElementById('cart-section').classList.toggle('hidden', cart.length === 0);
+    }
+
+    function finalSubmit() {
+      let totalDiCart = 0; 
+      cart.forEach(item => totalDiCart += parseFloat(item.durasi));
+      
+      let limitAman = 10.58; 
+      let totalKumulatif = serverTotalJam + totalDiCart;
+
+      if(totalKumulatif > limitAman) {
+        return showAlertModal("Gagal Kirim! Total jam kamu (" + totalKumulatif.toFixed(2) + ") melebihi batas 10.5 jam.", "error", "Batas Jam Terlampaui");
+      }
+
+      showConfirmModal("Kirim " + cart.length + " laporan pekerjaan ke Group Leader?", "Kirim Laporan", () => {
+        showLoading("MENGIRIM SEMUA LAPORAN...");
+        const btn = document.getElementById('btnFinal');
+        if(btn) btn.disabled = true;
+
+        callServer('submitBulkLaporan', cart, selectedPartners.map(p => p.nrp)).then(msg => {
+          hideLoading();
+          showAlertModal(msg, "info", "Laporan Terkirim"); 
+          cart = []; 
+          selectedPartners = []; 
+          updateCartUI(); 
+          showPage('main-dashboard'); 
+          if(btn) { btn.disabled = false; btn.innerText = "KIRIM SEMUA LAPORAN"; }
+          setupDashboard(); 
+        }).catch(err => {
+          hideLoading();
+          if(btn) { btn.disabled = false; btn.innerText = "KIRIM SEMUA LAPORAN"; }
+          showAlertModal("Gagal mengirim laporan. Silakan coba lagi.", "error", "Gagal Kirim");
+        });
+      });
+    }
+
+    function loadGLData() {
+      const container = document.getElementById('gl-list');
+      container.innerHTML = '<div class="text-center p-3 text-xs font-bold text-amber-100">Memuat antrean...</div>';
+
+      callServer('getDashboardData', user.role, user.nama).then(data => {
+        if (!data || !data.rows || data.rows.length === 0) { 
+          container.innerHTML = '<div class="bg-brand-surface border border-brand-border p-3 rounded-xl text-center text-xs font-bold text-brand-tealDark">Tidak ada antrean pending.</div>'; 
+          return; 
+        }
+        let groups = {};
+        data.rows.forEach(r => {
+          const key = r[17] + "_" + r[0];
+          if (!groups[key]) groups[key] = { nrp: r[0], nama: r[1], tid: r[17], shift: r[18], jobs: [], total: 0 };
+          groups[key].jobs.push(r);
+          groups[key].total += parseFloat(r[12].toString().replace(',', '.')) || 0;
+        });
+        container.innerHTML = Object.values(groups).map(g => `
+          <div class="bg-tyre-card rounded-2xl p-3.5 shadow-sm border-l-4 border-l-brand-teal border-y border-r border-brand-border space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <h6 class="font-bold text-xs text-brand-tealDark">${g.nama} (${g.nrp})</h6>
+                <span class="text-[10px] text-brand-teal font-semibold">Shift: ${g.shift} | ID: ${g.tid}</span>
+              </div>
+              <span class="text-[9px] bg-brand-tealLight text-brand-tealDark border border-brand-border font-bold px-2 py-0.5 rounded-md">
+                📅 ${g.jobs[0][15]}
+              </span>
+            </div>
+
+            <div class="bg-brand-tealLight/60 p-2 rounded-xl border border-brand-border/60 text-xs space-y-1 text-brand-tealDark">
+              ${g.jobs.map(j => `<div class="flex justify-between"><span>• ${j[3]}</span> <span class="font-bold text-brand-teal">${j[12]}h</span></div>`).join('')}
+              <div class="border-t border-brand-border/60 pt-1 flex justify-between font-extrabold text-brand-tealDark">
+                <span>Total:</span>
+                <span class="text-brand-teal font-extrabold">${g.total.toFixed(2)} Jam</span>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-2 pt-1">
+              <div>
+                <label class="text-[9px] font-bold text-brand-tealDark block mb-0.5">Adj. Jam</label>
+                <input type="number" step="0.01" class="w-full bg-brand-tealLight border border-brand-border rounded-lg p-1.5 text-xs text-center font-bold text-brand-tealDark focus:outline-none" id="adj_${g.tid}_${g.nrp}" value="${g.total.toFixed(2)}">
+              </div>
+              <div class="col-span-2">
+                <label class="text-[9px] font-bold text-brand-tealDark block mb-0.5">Catatan / Alasan</label>
+                <input type="text" class="w-full bg-brand-tealLight border border-brand-border rounded-lg p-1.5 text-xs font-semibold text-brand-tealDark focus:outline-none" id="reason_${g.tid}_${g.nrp}" placeholder="Wajib jika Reject/Ubah Jam">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-1.5 pt-1">
+              <button class="py-2 bg-brand-teal hover:bg-brand-tealDark text-white font-extrabold text-[10px] rounded-lg transition uppercase shadow-sm border border-brand-yellow" onclick="approveAction('${g.tid}', '${g.nrp}', this)">APPROVE</button>
+              <button class="py-2 bg-brand-yellow hover:bg-amber-600 text-brand-tealDark font-extrabold text-[10px] rounded-lg transition uppercase shadow-sm border border-brand-teal" onclick="adjustAction('${g.tid}', '${g.nrp}', this)">ADJ 10.5</button>
+              <button class="py-2 bg-rose-800 hover:bg-rose-900 text-white font-extrabold text-[10px] rounded-lg transition uppercase shadow-sm" onclick="rejectAction('${g.tid}', '${g.nrp}', this)">REJECT</button>
+            </div>
+          </div>
+        `).join('');
+      });
+    }
+
+    function approveAction(tid, nrp, btn) {
+      const newJam = document.getElementById(`adj_${tid}_${nrp}`).value;
+      const reason = document.getElementById(`reason_${tid}_${nrp}`).value;
+      showConfirmModal("Setujui laporan shift ini?", "Approve Laporan", () => {
+        showLoading("MEMPROSES APPROVAL...");
+        callServer('updateStatusFinal', tid, nrp, "APPROVED", newJam, reason).then(msg => {
+          hideLoading(); 
+          showAlertModal(msg, "info", "Approval GL"); 
+          loadGLData(); 
+        }).catch(err => {
+          hideLoading(); 
+          showAlertModal("Gagal memproses approval.", "error", "Gagal");
+        });
+      });
+    }
+
+    function adjustAction(tid, nrp, btn) {
+      const reason = document.getElementById(`reason_${tid}_${nrp}`).value;
+      showConfirmModal("Yakin Approve & Adjust jam ke 10.5?", "Adjust 10.5 Jam", () => {
+        showLoading("MEMPROSES ADJUSTMENT...");
+        callServer('autoAdjustToMax', tid, nrp, reason).then(msg => {
+          hideLoading(); 
+          showAlertModal(msg, "info", "Adjust 10.5 Jam"); 
+          loadGLData(); 
+        }).catch(err => {
+          hideLoading(); 
+          showAlertModal("Gagal memproses adjustment.", "error", "Gagal");
+        });
+      });
+    }
+
+    function rejectAction(tid, nrp, btn) {
+      const reason = document.getElementById(`reason_${tid}_${nrp}`).value;
+      if(!reason || reason.trim() === "") return showAlertModal("Alasan REJECT wajib diisi pada kolom catatan!", "warning", "Alasan Wajib Isi");
+      showConfirmModal("Tolak laporan pekerjaan ini?", "Reject Laporan", () => {
+        showLoading("MEMPROSES REJECT...");
+        callServer('updateStatusFinal', tid, nrp, "REJECTED", null, reason).then(msg => {
+          hideLoading(); 
+          showAlertModal(msg, "info", "Reject Laporan"); 
+          loadGLData(); 
+        }).catch(err => {
+          hideLoading(); 
+          showAlertModal("Gagal menolak laporan.", "error", "Gagal");
+        });
+      });
+    }
+
+    function loadAdminData() {
+      const list = document.getElementById('admin-list'); 
+      list.innerHTML = '<div class="text-center p-3 text-xs font-bold text-amber-100">Memuat...</div>';
+
+      callServer('getDashboardData', user.role, "").then(summary => {
+        if (!summary || summary.length === 0) { 
+          list.innerHTML = '<div class="bg-brand-surface border border-brand-border p-3 rounded-xl text-center text-xs font-bold text-brand-tealDark">Antrian Bersih!</div>'; 
+          return; 
+        }
+        list.innerHTML = summary.map(s => `
+          <div class="bg-tyre-card rounded-2xl p-3 shadow-sm border-l-4 border-l-brand-yellow border-y border-r border-brand-border flex justify-between items-center">
+            <div>
+              <h6 class="text-xs font-bold text-brand-tealDark">${s.namaUser}</h6>
+              <p class="text-[10px] text-brand-teal font-semibold">GL Assigned: ${s.namaGL}</p>
+            </div>
+            <span class="text-[9px] bg-brand-yellow/30 text-brand-tealDark border border-brand-yellow px-2 py-0.5 rounded-full font-bold">
+              PENDING
+            </span>
+          </div>
+        `).join('');
+      });
+    }
+  </script>
+</body>
+</html>
